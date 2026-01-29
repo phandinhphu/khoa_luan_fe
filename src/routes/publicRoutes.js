@@ -14,6 +14,7 @@ import DocumentReader from '../pages/client/DocumentReader/DocumentReader';
 import Profile from '../pages/client/Profile/Profile';
 import Dashboard from '../pages/admin/Dashboard/Dashboard';
 import UserManagement from '../pages/admin/UserManagement/UserManagement';
+import DocumentManagement from '../pages/admin/DocumentManagement/DocumentManagement';
 import Forbidden from '../pages/error/Forbidden/Forbidden';
 
 /**
@@ -78,6 +79,13 @@ const publicRoutes = [
     {
         path: '/admin/users',
         component: UserManagement,
+        layout: AdminLayout,
+        requiresAuth: true,
+        allowedRoles: ['admin'],
+    },
+    {
+        path: '/admin/documents',
+        component: DocumentManagement,
         layout: AdminLayout,
         requiresAuth: true,
         allowedRoles: ['admin'],

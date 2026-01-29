@@ -13,12 +13,13 @@ const AdminLayout = ({ children }) => {
     return (
         <div className="min-h-screen flex bg-gray-100">
             {/* Sidebar */}
-            <aside className="w-64 bg-slate-800 text-white flex-shrink-0 hidden md:flex flex-col">
+            <aside className="w-64 bg-slate-800 text-white shrink-0 hidden md:flex flex-col">
                 <div className="h-16 flex items-center justify-center font-bold text-xl border-b border-slate-700">
                     Admin Panel
                 </div>
                 <nav className="flex-1 px-2 py-4 space-y-2">
                     <a href="/admin/dashboard" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Dashboard</a>
+                    <a href="/admin/documents" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Documents</a>
                     <a href="/admin/users" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Users</a>
                     <a href="/admin/settings" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Settings</a>
                 </nav>
@@ -39,7 +40,7 @@ const AdminLayout = ({ children }) => {
                     </div>
                 </header>
                 <main className="flex-1 p-6 overflow-y-auto">
-                    <div className="bg-white rounded-lg shadow p-6 min-h-[500px]">
+                    <div className="bg-white rounded-lg shadow p-6 min-h-125">
                          {children}
                     </div>
                 </main>
