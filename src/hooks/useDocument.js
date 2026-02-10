@@ -111,3 +111,34 @@ export const useDeleteDocument = () => {
         },
     });
 };
+
+// ============== REVIEW HOOKS ==============
+
+/**
+ * Hook to fetch document reviews with pagination
+ */
+export const useDocumentReviews = (documentId, page = 1, limit = 5) => {
+    return useQuery({
+        queryKey: ['document-reviews', documentId, page, limit],
+        queryFn: () => documentService.getDocumentReviews(documentId, page, limit),
+        enabled: !!documentId,
+        refetchOnWindowFocus: false,
+        retry: false,
+        keepPreviousData: true,
+    });
+};
+
+/**
+ * Hook to create a document review
+ */
+export const useCreateDocumentReview = (documentId) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (reviewData) => documentService.createDocumentReview(documentId, reviewData),
+        onSuccess: () => {
+            // Invalidate reviews to refetch
+            queryClient.invalidateQueries({ queryKey: ['document-reviews', documentId] });
+        },
+    });
+};

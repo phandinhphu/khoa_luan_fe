@@ -141,3 +141,44 @@ export const deleteDocument = async (id) => {
         }
     }
 };
+
+// ============== REVIEW APIs ==============
+
+/**
+ * Get reviews for a document
+ * @param {string} documentId
+ * @param {number} page
+ * @param {number} limit
+ */
+export const getDocumentReviews = async (documentId, page = 1, limit = 5) => {
+    try {
+        const response = await httpRequest.get(`/documents/${documentId}/reviews`, {
+            params: { page, limit },
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Có lỗi xảy ra khi tải đánh giá.');
+        }
+    }
+};
+
+/**
+ * Create a review for a document
+ * @param {string} documentId
+ * @param {Object} reviewData - { rating, comment }
+ */
+export const createDocumentReview = async (documentId, reviewData) => {
+    try {
+        const response = await httpRequest.post(`/documents/${documentId}/reviews`, reviewData);
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Có lỗi xảy ra khi gửi đánh giá.');
+        }
+    }
+};
