@@ -21,6 +21,7 @@ const AdminLayout = ({ children }) => {
                     <a href="/admin/dashboard" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Dashboard</a>
                     <a href="/admin/documents" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Documents</a>
                     <a href="/admin/users" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Users</a>
+                    <a href="/admin/forum" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Forum</a>
                     <a href="/admin/settings" className="block px-4 py-2 rounded-md hover:bg-slate-700 transition">Settings</a>
                 </nav>
             </aside>
