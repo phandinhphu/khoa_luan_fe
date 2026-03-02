@@ -13,6 +13,7 @@ const DocumentReader = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [imageCache, setImageCache] = useState({});
+    const [zoomLevel, setZoomLevel] = useState(100); // Zoom level in percentage
 
     const document = documentData?.data?.document || null;
     const hasAccess = documentData?.data?.hasAccess || false;
@@ -37,14 +38,16 @@ const DocumentReader = () => {
         const heightRatio = maxHeight / height;
         const scale = Math.min(widthRatio, heightRatio, 1);
         
-        width = width * scale;
-        height = height * scale;
+        // Apply zoom level
+        const zoomMultiplier = zoomLevel / 100;
+        width = width * scale * zoomMultiplier;
+        height = height * scale * zoomMultiplier;
         
         canvas.width = width;
         canvas.height = height;
         
         ctx.drawImage(img, 0, 0, width, height);
-    }, []);
+    }, [zoomLevel]);
 
     // Kiểm tra quyền truy cập
     useEffect(() => {
@@ -118,12 +121,32 @@ const DocumentReader = () => {
         navigate(`/documents/${id}`);
     }, [id, navigate]);
 
+    // Zoom handlers
+    const handleZoomIn = useCallback(() => {
+        setZoomLevel(prev => Math.min(prev + 25, 200)); // Max 200%
+    }, []);
+
+    const handleZoomOut = useCallback(() => {
+        setZoomLevel(prev => Math.max(prev - 25, 50)); // Min 50%
+    }, []);
+
+    const handleZoomReset = useCallback(() => {
+        setZoomLevel(100);
+    }, []);
+
     // Load trang khi currentPage thay đổi
     useEffect(() => {
         if (hasAccess) {
             loadPage(currentPage);
         }
     }, [currentPage, hasAccess, loadPage]);
+
+    // Redraw canvas when zoom level changes
+    useEffect(() => {
+        if (imageCache[currentPage]) {
+            drawImageOnCanvas(imageCache[currentPage]);
+        }
+    }, [zoomLevel, currentPage, imageCache, drawImageOnCanvas]);
 
     // Preload trang tiếp theo
     useEffect(() => {
@@ -157,12 +180,21 @@ const DocumentReader = () => {
                 handleNextPage();
             } else if (e.key === 'Escape') {
                 handleClose();
+            } else if (e.key === '+' || e.key === '=') {
+                e.preventDefault();
+                handleZoomIn();
+            } else if (e.key === '-' || e.key === '_') {
+                e.preventDefault();
+                handleZoomOut();
+            } else if (e.key === '0') {
+                e.preventDefault();
+                handleZoomReset();
             }
         };
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [handlePrevPage, handleNextPage, handleClose]);
+    }, [handlePrevPage, handleNextPage, handleClose, handleZoomIn, handleZoomOut, handleZoomReset]);
 
     // Ngăn chặn context menu (chuột phải)
     useEffect(() => {
@@ -226,7 +258,49 @@ const DocumentReader = () => {
                     </h1>
                 </div>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
+                    {/* Zoom controls */}
+                    <div className="flex items-center gap-2 border-r border-gray-700 pr-4">
+                        <button
+                            onClick={handleZoomOut}
+                            disabled={zoomLevel <= 50}
+                            className={`
+                                px-3 py-1 rounded transition
+                                ${zoomLevel <= 50 
+                                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                                    : 'bg-gray-700 hover:bg-gray-600'
+                                }
+                            `}
+                            title="Thu nhỏ (-)"
+                        >
+                            −
+                        </button>
+                        <span className="text-sm min-w-15 text-center">
+                            {zoomLevel}%
+                        </span>
+                        <button
+                            onClick={handleZoomIn}
+                            disabled={zoomLevel >= 200}
+                            className={`
+                                px-3 py-1 rounded transition
+                                ${zoomLevel >= 200 
+                                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                                    : 'bg-gray-700 hover:bg-gray-600'
+                                }
+                            `}
+                            title="Phóng to (+)"
+                        >
+                            +
+                        </button>
+                        <button
+                            onClick={handleZoomReset}
+                            className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 transition text-sm"
+                            title="Đặt lại (0)"
+                        >
+                            Reset
+                        </button>
+                    </div>
+                    
                     <span className="text-sm">
                         Trang {currentPage} / {totalPages}
                     </span>
@@ -234,7 +308,7 @@ const DocumentReader = () => {
             </div>
 
             {/* Main content */}
-            <div className="flex-1 flex items-center justify-center relative overflow-hidden">
+            <div className="flex-1 flex items-center justify-center relative overflow-auto">
                 {loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
                         <div className="text-white text-xl">Đang tải trang...</div>
@@ -243,7 +317,11 @@ const DocumentReader = () => {
 
                 <canvas
                     ref={canvasRef}
-                    className="max-w-full max-h-full object-contain select-none pointer-events-none"
+                    className="select-none pointer-events-none"
+                    style={{ 
+                        maxWidth: zoomLevel > 100 ? 'none' : '100%',
+                        maxHeight: zoomLevel > 100 ? 'none' : '100%'
+                    }}
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                     onContextMenu={(e) => e.preventDefault()}

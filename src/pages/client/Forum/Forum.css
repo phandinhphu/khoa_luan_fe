@@ -54,11 +54,13 @@
 
 .post-card {
     background: white;
+    width: 75%;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 20px;
     cursor: pointer;
     transition: all 0.2s;
+    margin: 0 auto 30px auto;
 }
 
 .post-card:hover {
