@@ -308,7 +308,10 @@ const DocumentReader = () => {
             </div>
 
             {/* Main content */}
-            <div className="flex-1 flex items-center justify-center relative overflow-auto">
+            <div className={`
+                flex-1 flex relative overflow-auto
+                ${zoomLevel > 100 ? 'p-8' : 'items-center justify-center'}
+            `}>
                 {loading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
                         <div className="text-white text-xl">Đang tải trang...</div>
@@ -317,7 +320,7 @@ const DocumentReader = () => {
 
                 <canvas
                     ref={canvasRef}
-                    className="select-none pointer-events-none"
+                    className={`select-none pointer-events-none ${zoomLevel > 100 ? 'm-auto' : ''}`}
                     style={{ 
                         maxWidth: zoomLevel > 100 ? 'none' : '100%',
                         maxHeight: zoomLevel > 100 ? 'none' : '100%'
