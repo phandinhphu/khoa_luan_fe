@@ -142,6 +142,23 @@ export const deleteDocument = async (id) => {
     }
 };
 
+/**
+ * Get document processing status (Admin)
+ * @param {string} id - Document ID
+ */
+export const getDocumentStatus = async (id) => {
+    try {
+        const response = await httpRequest.get(`/documents/${id}/status`);
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Có lỗi xảy ra khi kiểm tra trạng thái tài liệu.');
+        }
+    }
+};
+
 // ============== REVIEW APIs ==============
 
 /**

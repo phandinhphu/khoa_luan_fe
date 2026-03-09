@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FileText, Plus, Edit, Trash2, Search, Upload } from 'lucide-react';
 import DataTable from '../../../components/common/DataTable';
 import Pagination from '../../../components/common/Pagination';
 import Modal from '../../../components/common/Modal';
+import UploadProgress from '../../../components/common/UploadProgress';
 import {
     useAllDocumentsAdmin,
-    useUploadDocument,
     useUpdateDocument,
     useDeleteDocument,
 } from '../../../hooks/useDocument';
+import { useDocumentUploadWithProgress } from '../../../hooks/useDocumentUploadWithProgress';
 import {
     getCopyrightStatusOptions,
     getCopyrightStatusLabel,
@@ -24,8 +25,8 @@ const DocumentManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     // React Query hooks
-    const { data: documentsData, isLoading } = useAllDocumentsAdmin(currentPage, pageSize);
-    const uploadDocumentMutation = useUploadDocument();
+    const { data: documentsData, isLoading, refetch } = useAllDocumentsAdmin(currentPage, pageSize);
+    const { uploadState, startUpload, resetUpload } = useDocumentUploadWithProgress();
     const updateDocumentMutation = useUpdateDocument();
     const deleteDocumentMutation = useDeleteDocument();
 
@@ -68,6 +69,7 @@ const DocumentManagement = () => {
             file: null,
         });
         setErrors({});
+        resetUpload();
         setIsUploadModalOpen(true);
     };
 
@@ -161,15 +163,28 @@ const DocumentManagement = () => {
         e.preventDefault();
         if (!validateUploadForm()) return;
 
-        try {
-            await uploadDocumentMutation.mutateAsync(uploadFormData);
-            toast.success('Tải lên tài liệu thành công');
-            setIsUploadModalOpen(false);
-        } catch (error) {
-            console.error('Error uploading document:', error);
-            toast.error(error.message || 'Có lỗi xảy ra khi tải lên tài liệu');
+        const result = await startUpload(uploadFormData);
+
+        if (!result.success) {
+            toast.error(result.error || 'Có lỗi xảy ra khi tải lên tài liệu');
         }
     };
+
+    // Watch upload status and handle completion
+    useEffect(() => {
+        if (uploadState.status === 'completed') {
+            toast.success('Tài liệu đã được tải lên và xử lý thành công!');
+            // Refetch documents list
+            refetch();
+            // Close modal after a short delay
+            setTimeout(() => {
+                setIsUploadModalOpen(false);
+                resetUpload();
+            }, 2500);
+        } else if (uploadState.status === 'error' && uploadState.error) {
+            toast.error(uploadState.error);
+        }
+    }, [uploadState.status, uploadState.error, refetch, resetUpload]);
 
     // Submit edit form
     const handleEditSubmit = async (e) => {
@@ -305,11 +320,24 @@ const DocumentManagement = () => {
             {/* Upload Document Modal */}
             <Modal
                 isOpen={isUploadModalOpen}
-                onClose={() => setIsUploadModalOpen(false)}
+                onClose={() => !uploadState.isUploading && setIsUploadModalOpen(false)}
                 title="Tải lên tài liệu mới"
                 size="md"
             >
                 <form onSubmit={handleUploadSubmit} className="document-form">
+                    {/* Show upload progress when uploading */}
+                    {uploadState.isUploading && (
+                        <div style={{ marginBottom: '20px' }}>
+                            <UploadProgress
+                                fileName={uploadState.fileName}
+                                status={uploadState.status}
+                                progress={uploadState.progress}
+                                totalPages={uploadState.totalPages}
+                                error={uploadState.error}
+                            />
+                        </div>
+                    )}
+
                     <div className="form-group">
                         <label className="form-label">
                             Tiêu đề <span className="required">*</span>
@@ -321,6 +349,7 @@ const DocumentManagement = () => {
                             onChange={handleUploadInputChange}
                             className={`form-input ${errors.title ? 'error' : ''}`}
                             placeholder="Nhập tiêu đề tài liệu"
+                            disabled={uploadState.isUploading}
                         />
                         {errors.title && <span className="error-message">{errors.title}</span>}
                     </div>
@@ -334,6 +363,7 @@ const DocumentManagement = () => {
                             accept=".pdf,.docx"
                             onChange={handleFileChange}
                             className={`file-input ${errors.file ? 'error' : ''}`}
+                            disabled={uploadState.isUploading}
                         />
                         <p className="file-hint">Chỉ chấp nhận file PDF hoặc DOCX, tối đa 50MB</p>
                         {uploadFormData.file && (
@@ -354,6 +384,7 @@ const DocumentManagement = () => {
                                 onChange={handleUploadInputChange}
                                 min="1"
                                 className={`form-input ${errors.total_copies ? 'error' : ''}`}
+                                disabled={uploadState.isUploading}
                             />
                             {errors.total_copies && (
                                 <span className="error-message">{errors.total_copies}</span>
@@ -369,6 +400,7 @@ const DocumentManagement = () => {
                                 value={uploadFormData.copyright_status}
                                 onChange={handleUploadInputChange}
                                 className="form-input"
+                                disabled={uploadState.isUploading}
                             >
                                 {getCopyrightStatusOptions().map((option) => (
                                     <option key={option.value} value={option.value}>
@@ -384,16 +416,16 @@ const DocumentManagement = () => {
                             type="button"
                             onClick={() => setIsUploadModalOpen(false)}
                             className="btn-secondary"
-                            disabled={uploadDocumentMutation.isPending}
+                            disabled={uploadState.isUploading}
                         >
-                            Hủy
+                            {uploadState.isUploading ? 'Đang xử lý...' : 'Hủy'}
                         </button>
                         <button
                             type="submit"
                             className="btn-primary"
-                            disabled={uploadDocumentMutation.isPending}
+                            disabled={uploadState.isUploading}
                         >
-                            {uploadDocumentMutation.isPending ? 'Đang tải lên...' : 'Tải lên'}
+                            {uploadState.isUploading ? 'Đang tải lên...' : 'Tải lên'}
                         </button>
                     </div>
                 </form>
