@@ -70,6 +70,7 @@ const DocumentReader = () => {
 
         setLoading(true);
         try {
+            console.log(`Đang tải trang ${pageNumber} của tài liệu ${id}...`);
             const arrayBuffer = await readDocumentByPage(id, pageNumber);
 
             // Giải mã XOR
@@ -137,8 +138,14 @@ const DocumentReader = () => {
     // Load trang khi currentPage thay đổi
     useEffect(() => {
         if (hasAccess) {
-            loadPage(currentPage);
+            const frameId = window.requestAnimationFrame(() => {
+                loadPage(currentPage);
+            });
+
+            return () => window.cancelAnimationFrame(frameId);
         }
+
+        return undefined;
     }, [currentPage, hasAccess, loadPage]);
 
     // Redraw canvas when zoom level changes
@@ -383,7 +390,19 @@ const DocumentReader = () => {
                 </button>
                 
                 <div className="flex items-center gap-2">
-                    <span>{currentPage}</span>
+                    <input
+                        type="number"
+                        min="1"
+                        max={totalPages}
+                        value={currentPage}
+                        onChange={(e) => {
+                            const page = parseInt(e.target.value);
+                            if (page >= 1 && page <= totalPages) {
+                                setCurrentPage(page);
+                            }
+                        }}
+                        className="w-16 px-2 py-1 text-center bg-gray-800 border border-gray-600 rounded text-white"
+                    />
                     <span> / {totalPages}</span>
                 </div>
 

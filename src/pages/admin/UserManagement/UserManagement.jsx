@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Users, Plus, Edit, Trash2, Search, UserCog } from 'lucide-react';
 import DataTable from '../../../components/common/DataTable';
 import Pagination from '../../../components/common/Pagination';

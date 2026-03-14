@@ -1,5 +1,3 @@
-import { lazy } from 'react';
-
 // Layouts
 import AuthLayout from '../layouts/AuthLayout/AuthLayout';
 import ClientLayout from '../layouts/ClientLayout/ClientLayout';
