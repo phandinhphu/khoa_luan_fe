@@ -1,75 +1,103 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import useAuth from '@/hooks/useAuth';
+import { Search } from 'lucide-react';
+import './ClientLayout.css';
 
 const ClientLayout = ({ children }) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [search, setSearch] = useState('');
+
+    const isHome = location.pathname === '/';
 
     const handleLogout = async () => {
         await logout();
         navigate('/login');
     };
 
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        const query = search.trim();
+        navigate(query ? `/?q=${encodeURIComponent(query)}` : '/');
+    };
+
     return (
-        <div className="min-h-screen flex flex-col bg-white">
-            <header className="border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <div className="shrink-0">
-                        <h1 className="text-xl font-bold text-indigo-600">Thư viện số</h1>
+        <div className="cl-shell min-h-screen flex flex-col">
+            <header className="cl-header">
+                <div className="cl-header-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="cl-brand-zone">
+                        <Link to="/" className="cl-brand">
+                            <span className="cl-brand-dot" />
+                            <span>Thu vien so</span>
+                        </Link>
+                        <p className="cl-brand-subtitle">Doc, muon va thao luan tai lieu hoc thuat</p>
                     </div>
-                    {/* Navigation placeholder */}
-                    <nav className="flex items-center space-x-4">
-                        <a href="/" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md font-medium">
-                            Trang chủ
-                        </a>
-                        <a href="/forum" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md font-medium">
-                            Diễn đàn
-                        </a>
+
+                    <form onSubmit={handleSearchSubmit} className="cl-search" role="search">
+                        <Search size={16} />
+                        <input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Tim nhanh tai lieu theo tieu de..."
+                            aria-label="Tim tai lieu"
+                        />
+                        <button type="submit">Tim</button>
+                    </form>
+
+                    <nav className="cl-nav">
+                        <NavLink to="/" className={({ isActive }) => `cl-link ${isActive && isHome ? 'active' : ''}`}>
+                            Trang chu
+                        </NavLink>
+                        <NavLink to="/forum" className={({ isActive }) => `cl-link ${isActive ? 'active' : ''}`}>
+                            Dien dan
+                        </NavLink>
                         {user && (
-                            <a href="/forum/my-posts" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md font-medium">
-                                Bài viết của tôi
-                            </a>
+                            <NavLink to="/forum/my-posts" className={({ isActive }) => `cl-link ${isActive ? 'active' : ''}`}>
+                                Bai viet cua toi
+                            </NavLink>
                         )}
 
                         {user ? (
-                            <div className="flex items-center space-x-4">
-                                <div className="relative group">
-                                    <button className="flex items-center space-x-2 focus:outline-none">
+                            <div className="relative group">
+                                    <button className="cl-user-trigger">
                                         <img
                                             src={user.avatar_url || 'https://via.placeholder.com/32'}
                                             alt={user.name}
-                                            className="w-8 h-8 rounded-full"
+                                            className="w-8 h-8 rounded-full border border-white/40"
                                         />
-                                        <span className="text-gray-700 font-medium">{user.name}</span>
+                                        <span className="cl-user-name">{user.name}</span>
                                     </button>
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                                        <a href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                            Hồ sơ
-                                        </a>
+                                    <div className="cl-user-menu absolute right-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                                        <Link to="/profile" className="block px-4 py-2 text-slate-700 hover:bg-slate-100">
+                                            Ho so
+                                        </Link>
                                         <button
                                             onClick={handleLogout}
-                                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                            className="w-full text-left px-4 py-2 text-slate-700 hover:bg-slate-100"
                                         >
-                                            Đăng xuất
+                                            Dang xuat
                                         </button>
                                     </div>
                                 </div>
-                            </div>
                         ) : (
-                            <a
-                                href="/login"
-                                className="text-indigo-600 hover:text-indigo-800 px-3 py-2 rounded-md font-medium"
+                            <Link
+                                to="/login"
+                                className="cl-login"
                             >
-                                Đăng nhập
-                            </a>
+                                Dang nhap
+                            </Link>
                         )}
                     </nav>
                 </div>
             </header>
+
             <main className="grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
-            <footer className="bg-gray-50 border-t border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-500 text-sm">
-                    &copy; 2026 MyApp. All rights reserved.
+
+            <footer className="cl-footer">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
+                    © 2026 Thu vien so. Nen tang tri thuc cho nguoi hoc.
                 </div>
             </footer>
         </div>

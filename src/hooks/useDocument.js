@@ -4,10 +4,10 @@ import { borrowDocument, returnDocument } from '@/services/borrow.service';
 
 // ============== CLIENT HOOKS ==============
 
-export const useAllDocuments = () => {
+export const useAllDocuments = (page = 1, limit = 10) => {
     return useQuery({
-        queryKey: ['documents'],
-        queryFn: () => documentService.getAllDocuments(),
+        queryKey: ['documents', page, limit],
+        queryFn: () => documentService.getAllDocuments(page, limit),
         enabled: true,
         refetchOnWindowFocus: false,
         retry: false,

@@ -25,7 +25,7 @@ const Pagination = ({
     onPageChange,
     maxButtons = 5,
 }) => {
-    if (!Number.isFinite(totalPages) || totalPages <= 1) return null;
+    // if (!Number.isFinite(totalPages) || totalPages <= 1) return null;
 
     const pages = buildPageWindow(totalPages, page, maxButtons);
 

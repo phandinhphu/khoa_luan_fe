@@ -1,12 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Plus Jakarta Sans", "Manrope", "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  background-color: #242424;
+  color: #16253f;
+  background-color: #f4f7ff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,33 +13,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+* {
+  box-sizing: border-box;
 }
 
-a:hover {
-  color: #535bf2;
+a {
+  text-decoration: none;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  background: #f4f7ff;
 }
 
 button {
   font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  font-weight: 500;
   cursor: pointer;
+}
+
+#root {
+  min-height: 100vh;
 }

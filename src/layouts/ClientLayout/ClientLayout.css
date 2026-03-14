@@ -1,0 +1,162 @@
+.cl-shell {
+    background:
+        radial-gradient(circle at 8% 5%, rgba(255, 204, 129, 0.22), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(134, 186, 255, 0.22), transparent 26%),
+        linear-gradient(170deg, #f7f9fe 12%, #edf2ff 55%, #f8fbff 100%);
+}
+
+.cl-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    backdrop-filter: blur(14px);
+    background: rgba(252, 253, 255, 0.9);
+    border-bottom: 1px solid rgba(19, 39, 77, 0.08);
+}
+
+.cl-header-inner {
+    min-height: 84px;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr auto;
+    align-items: center;
+    gap: 14px;
+}
+
+.cl-brand-zone {
+    min-width: 0;
+}
+
+.cl-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #1f3864;
+    font-size: 20px;
+}
+
+.cl-brand-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #f59f45, #e35a34);
+    box-shadow: 0 0 0 4px rgba(245, 159, 69, 0.2);
+}
+
+.cl-brand-subtitle {
+    margin: 2px 0 0;
+    color: #607393;
+    font-size: 12px;
+}
+
+.cl-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(17, 33, 64, 0.12);
+    border-radius: 999px;
+    background: white;
+    min-height: 42px;
+    padding: 0 12px;
+}
+
+.cl-search svg {
+    color: #45608c;
+    flex: none;
+}
+
+.cl-search input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #243a60;
+    font-size: 14px;
+}
+
+.cl-search button {
+    border: 0;
+    border-radius: 999px;
+    padding: 7px 12px;
+    background: linear-gradient(145deg, #3f7bff, #2b55d9);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.cl-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cl-link {
+    color: #4d607f;
+    font-weight: 700;
+    padding: 8px 10px;
+    border-radius: 9px;
+    transition: all 0.2s ease;
+}
+
+.cl-link:hover,
+.cl-link.active {
+    color: #1c3663;
+    background: rgba(71, 119, 220, 0.12);
+}
+
+.cl-user-trigger {
+    border: 1px solid rgba(17, 33, 64, 0.15);
+    background: white;
+    border-radius: 999px;
+    padding: 4px 8px 4px 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.cl-user-name {
+    color: #263a5f;
+    font-size: 13px;
+    max-width: 96px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cl-user-menu {
+    background: white;
+    border: 1px solid rgba(17, 33, 64, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 16px 36px rgba(9, 26, 56, 0.14);
+    overflow: hidden;
+}
+
+.cl-login {
+    border: 1px solid rgba(40, 80, 160, 0.18);
+    background: white;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #2b4f95;
+    font-weight: 700;
+}
+
+.cl-footer {
+    border-top: 1px solid rgba(17, 33, 64, 0.08);
+    color: #6b7e9f;
+    background: rgba(253, 254, 255, 0.66);
+    margin-top: 24px;
+}
+
+@media (max-width: 1180px) {
+    .cl-header-inner {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .cl-nav {
+        flex-wrap: wrap;
+    }
+}

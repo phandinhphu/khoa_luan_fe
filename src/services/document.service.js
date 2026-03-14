@@ -2,9 +2,9 @@ import * as httpRequest from '@/utils/httpRequest';
 
 // ============== CLIENT APIs ==============
 
-export const getAllDocuments = async () => {
+export const getAllDocuments = async (page = 1, limit = 10) => {
     try {
-        const response = await httpRequest.get('/documents');
+        const response = await httpRequest.get(`/documents/?page=${page}&limit=${limit}`);
         return response.data;
     } catch (error) {
         if (error.response && error.response.data.message) {

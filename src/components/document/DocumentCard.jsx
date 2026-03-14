@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { previewDocument } from "../../services/document.service";
 import { xorDecode } from "../../utils/function";
+import { BookOpen, Eye } from 'lucide-react';
+import './DocumentCard.css';
 
 const DocumentCard = ({ document, onClick }) => {
     const canvasRef = useRef(null);
@@ -53,58 +55,38 @@ const DocumentCard = ({ document, onClick }) => {
     }, [document._id]);
 
     return (
-        <div
-            onClick={onClick}
-            className="
-                group
-                w-48
-                cursor-pointer
-                overflow-hidden
-                rounded-xl
-                border
-                border-gray-200
-                bg-white
-                shadow-sm
-                transition
-                hover:shadow-md
-                hover:-translate-y-1
-            "
-        >
-            {/* Preview */}
-            <div className="relative h-64 overflow-hidden bg-gray-100">
+        <article onClick={onClick} className="doc-card group cursor-pointer">
+            <div className="doc-card-preview">
                 {loading ? (
-                    <div className="text-sm text-gray-400">Loading...</div>
+                    <div className="doc-card-loading">Dang tai preview...</div>
                 ) : (
                     <canvas
                         ref={canvasRef}
-                        alt={document.title}
                         draggable={false}
-                        className="
-                            h-full w-full object-cover
-                            transition-transform duration-300 ease-out
-                            group-hover:scale-110
-                            group-hover:-translate-y-4
-                            select-none pointer-events-none
-                        "
+                        className="doc-card-canvas select-none pointer-events-none"
                     />
                 )}
+
+                <div className="doc-card-overlay">
+                    <span>
+                        <Eye size={14} />
+                        Xem chi tiet
+                    </span>
+                </div>
             </div>
 
-            {/* Title */}
-            <div className="p-3">
-                <h3
-                    className="
-                        text-sm
-                        font-medium
-                        text-gray-800
-                        truncate
-                    "
-                    title={document.title}
-                >
-                    {document.title}
-                </h3>
+            <div className="doc-card-content">
+                <h3 title={document.title}>{document.title}</h3>
+
+                <div className="doc-card-meta">
+                    <span>
+                        <BookOpen size={14} />
+                        Luot muon: {document.total_borrows || 0}
+                    </span>
+                    <span className="doc-card-badge">{document.copyright_status || 'Chua ro'}</span>
+                </div>
             </div>
-        </div>
+        </article>
     );
 };
 
